@@ -1,0 +1,27 @@
+{
+  "name": "todo-cli",
+  "version": "1.0.0",
+  "description": "todo command-line application",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha 'test/**/*.js' --timeout 60000 --exit"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GinkgoCoder/todo-cli.git"
+  },
+  "author": "Lei Sun",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/GinkgoCoder/todo-cli/issues"
+  },
+  "homepage": "https://github.com/GinkgoCoder/todo-cli#readme",
+  "dependencies": {
+    "sqlite3": "^5.0.2",
+    "validator": "^13.7.0"
+  },
+  "devDependencies": {
+    "chai": "^4.3.4",
+    "mocha": "^9.1.3"
+  }
+}
