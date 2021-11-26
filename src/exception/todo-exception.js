@@ -1,7 +1,9 @@
+'use strict'
+
 class TodoException extends Error {
-    constructor(errorCode, message) {
-        super(message);
-        this.errorCode = errorCode;
-    }
+  constructor (errorCode, message) {
+    super(message)
+    this.errorCode = errorCode
+  }
 }
-module.exports = TodoException;
+module.exports = TodoException
