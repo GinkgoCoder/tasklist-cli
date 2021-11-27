@@ -14,7 +14,7 @@ describe('Task Dao Test', async () => {
     this.taskDao = new TaskDao(this.dbPath)
   })
 
-  beforeEach('Initilize Task Table', async () => {
+  beforeEach('Initialize Task Table', async () => {
     await runSql(this.db, CREATE_TASK_TABLE_SQL)
   })
 

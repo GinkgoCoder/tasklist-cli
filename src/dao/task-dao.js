@@ -7,8 +7,8 @@ const TodoException = require('../exception/todo-exception')
 const ErrorCodes = require('../exception/error-code')
 
 class TaskDao {
-  constructor (sqlPath) {
-    this.db = connectToDB(sqlPath)
+  constructor (dbPath) {
+    this.db = connectToDB(dbPath)
   }
 
   async _createTaskTableIfNotExists () {
