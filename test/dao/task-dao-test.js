@@ -19,7 +19,7 @@ describe('Task Dao Test', async () => {
   })
 
   it('should create tasks and list tasks', async () => {
-    const task = new Task('test', Priority.NONE, Status.PENDING, 'Inbox', new Date(), new Date(), new Date())
+    const task = new Task('test', Priority.NONE, Status.PENDING, 1, false, new Date(), new Date(), new Date())
     await this.taskDao.createTask(task)
 
     const receivedTasks = await this.taskDao.getAllTasks()
@@ -30,7 +30,7 @@ describe('Task Dao Test', async () => {
   })
 
   it('should delete the task', async () => {
-    const task = new Task('test', Priority.NONE, Status.PENDING, 'Inbox', new Date(), new Date(), new Date())
+    const task = new Task('test', Priority.NONE, Status.PENDING, 1, false, new Date(), new Date(), new Date())
     await this.taskDao.createTask(task)
     await this.taskDao.deleteTaskById(1)
 
@@ -40,7 +40,7 @@ describe('Task Dao Test', async () => {
   })
 
   it('should update the task', async () => {
-    const task = new Task('test', Priority.NONE, Status.PENDING, 'Inbox', new Date(), new Date(), new Date())
+    const task = new Task('test', Priority.NONE, Status.PENDING, 1, false, new Date(), new Date(), new Date())
     await this.taskDao.createTask(task)
     task.setId(1)
     task.description = 'updated text'
