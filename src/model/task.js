@@ -5,29 +5,29 @@ const ErrorCodes = require('../exception/error-code')
 const { Status, Priority } = require('./enum')
 
 class Task {
-  constructor (id, description, priority, status, deadline, list, createTime, updatedTime) {
-    this.id = id
+  constructor (description, priority, status, list, deadline, createTime, updateTime) {
     this.description = description
     this.priority = priority
     this.status = status
     this.deadline = deadline
     this.createTime = createTime
-    this.updatedTime = updatedTime
+    this.updateTime = updateTime
     this.list = list
     this._validate()
   }
 
+  setId (id) {
+    this.id = id
+  }
+
   _validate () {
-    if (isNaN(this.id)) {
-      throw new TodoException(ErrorCodes.INVALID_ARGUMENT, 'id is not a number')
-    }
     if (this.deadline && !(this.deadline instanceof Date)) {
       throw new TodoException(ErrorCodes.INVALID_ARGUMENT, 'deadline is not a date')
     }
     if (!(this.createTime instanceof Date)) {
       throw new TodoException(ErrorCodes.INVALID_ARGUMENT, 'createTime is not a date')
     }
-    if (!(this.updatedTime instanceof Date)) {
+    if (!(this.updateTime instanceof Date)) {
       throw new TodoException(ErrorCodes.INVALID_ARGUMENT, 'updateTime is not a date')
     }
     if (!Object.values(Status).includes(this.status)) {

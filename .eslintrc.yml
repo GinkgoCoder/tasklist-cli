@@ -4,4 +4,4 @@ env:
   es2021: true
   mocha: true
 extends: "standard"
-rules: {}
+rules: { quotes: ["error", "single", { "allowTemplateLiterals": true }] }
