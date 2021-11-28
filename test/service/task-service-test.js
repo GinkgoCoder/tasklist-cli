@@ -25,7 +25,7 @@ describe('Task Service Test', () => {
     this.listDao = new ListDao(this.dbPath)
   })
 
-  beforeEach('Initialize Task Table', async () => {
+  beforeEach('Initialize Table', async () => {
     await runSql(this.db, CREATE_TASK_TABLE_SQL)
     await runSql(this.db, CREATE_LIST_TABLE_SQL)
     await this.listDao.createList(new List(DEFAULT_LIST))
@@ -253,7 +253,7 @@ describe('Task Service Test', () => {
     throw new Error('should throw an error')
   })
 
-  afterEach('Drop the Task Table', async () => {
+  afterEach('Drop the Table', async () => {
     await runSql(this.db, DROP_TASK_TABLE_SQL)
     await runSql(this.db, DROP_LIST_TABLE_SQL)
   })
