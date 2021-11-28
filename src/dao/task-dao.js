@@ -17,7 +17,9 @@ class TaskDao {
 
   _jsonToTask (obj) {
     const task = new Task(obj.description, obj.priority, obj.status, obj.list, obj.isArchived === '1',
-      new Date(parseInt(obj.deadline)), new Date(parseInt(obj.createTime)), new Date(parseInt(obj.updateTime)))
+      obj.deadline === 'NULL' ? undefined : new Date(parseInt(obj.deadline)),
+      new Date(parseInt(obj.createTime)), new Date(parseInt(obj.updateTime))
+    )
     task.setId(obj.id)
     return task
   }
@@ -31,7 +33,7 @@ class TaskDao {
       $isArchived: task.isArchived,
       $createTime: task.createTime.getTime(),
       $updateTime: task.updateTime.getTime(),
-      $deadline: task.deadline.getTime(),
+      $deadline: task.deadline ? task.deadline.getTime() : 'NULL',
       $list: task.list
     }
   }

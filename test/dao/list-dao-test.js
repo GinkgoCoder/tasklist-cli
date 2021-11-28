@@ -48,6 +48,11 @@ describe('List Dao Test', async () => {
     expect(realLists[0]).to.eql(list)
   })
 
+  it('should return empty array if there is no list', async () => {
+    const lists = await this.listDao.getLists()
+    expect(lists.length).to.equal(0)
+  })
+
   afterEach('Drop the List Table', async () => {
     await runSql(this.db, DROP_LIST_TABLE_SQL)
   })

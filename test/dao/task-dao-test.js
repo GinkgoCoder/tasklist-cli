@@ -50,6 +50,11 @@ describe('Task Dao Test', async () => {
     expect(receivedTasks[0]).to.eql(task)
   })
 
+  it('should return empty array if there is no task', async () => {
+    const tasks = await this.taskDao.getAllTasks()
+    expect(tasks.length).to.equal(0)
+  })
+
   afterEach('Drop the Task Table', async () => {
     await runSql(this.db, DROP_TASK_TABLE_SQL)
   })
