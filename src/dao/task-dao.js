@@ -1,6 +1,6 @@
 'use strict'
 
-const { CREATE_TASK_TABLE_SQL, CREAT_TASK_SQL, GET_TASKS_SQL, DELETE_TASK_SQL, UPDATE_TASK_SQL } = require('./sqls')
+const { CREATE_TASK_TABLE_SQL, CREAT_TASK_SQL, GET_TASKS_SQL, DELETE_TASK_SQL, UPDATE_TASK_SQL, GET_TASKS_BY_LIST_SQL } = require('./sqls')
 const { connectToDB, runSql, allSql } = require('../util/db-util')
 const Task = require('../model/task')
 const TodoException = require('../exception/todo-exception')
@@ -47,6 +47,10 @@ class TaskDao {
 
   async getAllTasks () {
     return (await allSql(this.db, GET_TASKS_SQL)).map(obj => this._jsonToTask(obj))
+  }
+
+  async getTasksByListId (id) {
+    return (await allSql(this.db, GET_TASKS_BY_LIST_SQL, id)).map(obj => this._jsonToTask(obj))
   }
 
   async deleteTaskById (id) {

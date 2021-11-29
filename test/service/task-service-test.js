@@ -253,6 +253,18 @@ describe('Task Service Test', () => {
     throw new Error('should throw an error')
   })
 
+  it('should get tasks for the specified list id', async () => {
+    await this.taskService.createTask('test1')
+    await this.taskService.createTask('test2')
+    await this.taskService.createTask('test3', 'Test')
+
+    const tasks = await this.taskService.getTasksByListId(1)
+
+    expect(tasks.length).to.equal(2)
+    expect(tasks[0].description).to.equal('test1')
+    expect(tasks[1].description).to.equal('test2')
+  })
+
   afterEach('Drop the Table', async () => {
     await runSql(this.db, DROP_TASK_TABLE_SQL)
     await runSql(this.db, DROP_LIST_TABLE_SQL)

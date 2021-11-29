@@ -21,6 +21,8 @@ exports.CREAT_TASK_SQL = `INSERT INTO ${TASK_TABLE_NAME} VALUES` +
 
 exports.GET_TASKS_SQL = `SELECT * FROM ${TASK_TABLE_NAME}`
 
+exports.GET_TASKS_BY_LIST_SQL = `SELECT * FROM ${TASK_TABLE_NAME} WHERE list=?`
+
 exports.DELETE_TASK_SQL = `DELETE FROM ${TASK_TABLE_NAME} WHERE id=?`
 
 exports.UPDATE_TASK_SQL = `UPDATE ${TASK_TABLE_NAME} SET description=$description, list=$list, priority=$priority, ` +

@@ -6,6 +6,7 @@ const TaskDao = require('../../src/dao/task-dao')
 const Task = require('../../src/model/task')
 const { Priority, Status } = require('../../src/model/enum')
 const { expect } = require('chai')
+const { await } = require('signale')
 
 describe('Task Dao Test', async () => {
   before('tear up', async () => {
@@ -53,6 +54,22 @@ describe('Task Dao Test', async () => {
   it('should return empty array if there is no task', async () => {
     const tasks = await this.taskDao.getAllTasks()
     expect(tasks.length).to.equal(0)
+  })
+
+  it('should get tasks for the specified list id', async () => {
+    const task1 = new Task('test1', Priority.NONE, Status.PENDING, 1, false, new Date(), new Date(), new Date())
+    const task2 = new Task('test2', Priority.NONE, Status.PENDING, 1, false, new Date(), new Date(), new Date())
+    const task3 = new Task('test3', Priority.NONE, Status.PENDING, 2, false, new Date(), new Date(), new Date())
+    await this.taskDao.createTask(task1)
+    await this.taskDao.createTask(task2)
+    await this.taskDao.createTask(task3)
+    task1.setId(1)
+    task2.setId(2)
+    task3.setId(3)
+    const tasks = await this.taskDao.getTasksByListId(1)
+    expect(tasks.length).to.equal(2)
+    expect(tasks[0]).to.eql(task1)
+    expect(tasks[1]).to.eql(task2)
   })
 
   afterEach('Drop the Task Table', async () => {
