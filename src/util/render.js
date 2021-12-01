@@ -1,64 +1,54 @@
 
-const log = require('loglevel')
-const chalk = require('chalk')
-const signale = require('signale')
+'use strict'
+const { underline, grey, bold, blue, red, green, yellow, strikethrough } = require('chalk')
 const figures = require('figures')
-const { Signale, pending, success, pause } = require('signale')
-const { Status } = require('../model/enum')
+const { info } = require('../util/logger')
+const { Status, Priority } = require('../model/enum')
 
-signale.config({ displayLabel: false })
-
-const customiztion = {
-  disabled: false,
-  interactive: false,
-  logLevel: 'info',
-  secrets: [],
-  stream: process.stdout,
-  types: {
-    list: {
-      badge: chalk.bold(figures.hamburger),
-      color: 'blue',
-      label: '',
-      logLevel: 'info'
-    }
-  }
+const outputListTitle = async (title) => {
+  await info(`${bold(blue(figures.hamburger))} ${underline(grey(title))}`)
 }
 
-const todoSignale = new Signale(customiztion)
+const outputTask = async ({ prefix, message, suffix }) => {
+  await info(`  ${prefix} ${message} ${suffix}`)
+}
 
-const renderTask = async (task) => {
+const _generateTaskPrefix = (task) => {
   switch (task.status) {
     case Status.PENDING:
-      return pending({
-        prefix: `  ${task.id}`,
-        message: chalk.strikethrough(task.description)
-      })
+      return `${figures.checkboxOff} ${task.id}`
     case Status.BLOCK:
-      return pause({
-        prefix: `  ${task.id}`,
-        message: task.description
-      })
+      return `${red(figures.cross)} ${task.id}`
     case Status.COMPLETE:
-      return success({
-        prefix: `  ${task.id}`,
-        message: chalk.strikethrough(task.description)
-      })
+      return `${green(figures.checkboxOn)} ${task.id}`
     case Status.IN_PROGRESS:
-      return signale.await({
-        prefix: `  ${task.id}`,
-        message: task.description
-      })
+      return `${yellow('...')} ${task.id}`
   }
 }
 
-exports.renderList = async (listName, tasks) => {
-  todoSignale.list(chalk.bold(chalk.gray(chalk.underline(listName))))
-  sortTasksByStatus(tasks)
-  for (const task of sortTasksByStatus(tasks)) {
-    renderTask(task)
+const _generateTaskSuffix = (task) => {
+  switch (task.priority) {
+    case Priority.HIGH:
+      return `(${red('!!!')})`
+    case Priority.MEDIUM:
+      return `(${yellow('!!')})`
+    case Priority.LOW:
+      return `(!)`
+    case Priority.NONE:
+      return ''
   }
 }
-function sortTasksByStatus (tasks) {
+
+const renderTask = async (task) => {
+  const taskOutput = {
+    prefix: _generateTaskPrefix(task),
+    message: task.status === Status.COMPLETE ? strikethrough(task.description) : task.description,
+    suffix: _generateTaskSuffix(task)
+  }
+  await outputTask(taskOutput)
+}
+
+const sortTasksByStatus = (tasks) => {
   const [pendings, inProgresss, blocks, completes] = [[], [], [], []]
   for (const task of tasks) {
     switch (task.status) {
@@ -77,4 +67,12 @@ function sortTasksByStatus (tasks) {
     }
   }
   return [...pendings, ...inProgresss, ...blocks, ...completes]
+}
+
+exports.renderList = async (listName, tasks) => {
+  await outputListTitle(listName)
+  sortTasksByStatus(tasks)
+  for (const task of sortTasksByStatus(tasks)) {
+    renderTask(task)
+  }
 }

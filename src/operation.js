@@ -1,6 +1,5 @@
 'use strict'
 
-const { await } = require('signale')
 const ListService = require('./service/list-service')
 const TaskService = require('./service/task-service')
 const { renderList } = require('./util/render')
@@ -24,10 +23,21 @@ class Opration {
   async showTasks (opts) {
     const lists = await this.listService.getLists()
 
-    for (const list of lists) {
-      const tasksForList = await this.taskService.getTasksByListId(list.id)
-      renderList(list.name, tasksForList)
+    if (opts.list) {
+      const filteredList = lists.filter(l => l.name === opts.list)
+      if (filteredList.length > 0) {
+        await this._showTaskForList(filteredList)
+      }
+    } else {
+      for (const list of lists) {
+        await this._showTaskForList(list)
+      }
     }
+  }
+
+  async _showTaskForList (list) {
+    const tasksForList = await this.taskService.getTasksByListId(list.id)
+    renderList(list.name, tasksForList)
   }
 }
 

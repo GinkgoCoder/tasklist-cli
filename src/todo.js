@@ -10,7 +10,6 @@ const Opration = require('./operation')
 const program = new Command()
 
 const dbPath = join(HOME_DIR, 'todo.db')
-console.log(dbPath)
 const initialize = async () => {
   if (!fs.existsSync(HOME_DIR)) {
     fs.mkdirSync(HOME_DIR)
@@ -20,7 +19,6 @@ const initialize = async () => {
     await runSql(db, CREATE_TASK_TABLE_SQL)
     await runSql(db, CREATE_LIST_TABLE_SQL)
     await runSql(db, CREATE_LIST_SQL, DEFAULT_LIST)
-    console.log('asd')
   }
 }
 
@@ -61,5 +59,5 @@ program.command('list')
 program
   .option('-a --archive', 'show all tasks')
   .option('-l --list <list>', 'show the task in the specified list')
-  .action(async () => await operation.showTasks())
+  .action(async (opts) => await operation.showTasks(opts))
   .parse(process.argv)
