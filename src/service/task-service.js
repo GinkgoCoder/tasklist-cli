@@ -7,7 +7,6 @@ const { DEFAULT_LIST } = require('../util/constants')
 const { Priority, Status, validatePriority } = require('../model/enum')
 const TodoException = require('../exception/todo-exception')
 const ErrorCodes = require('../exception/error-code')
-const { await } = require('signale')
 class TaskService {
   constructor (dbPath) {
     this.taskDao = new TaskDao(dbPath)

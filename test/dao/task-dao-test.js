@@ -6,7 +6,6 @@ const TaskDao = require('../../src/dao/task-dao')
 const Task = require('../../src/model/task')
 const { Priority, Status } = require('../../src/model/enum')
 const { expect } = require('chai')
-const { await } = require('signale')
 
 describe('Task Dao Test', async () => {
   before('tear up', async () => {
