@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "todo command-line application",
   "main": "index.js",
+  "bin": {
+    "td": "./src/todo.js"
+  },
   "scripts": {
     "test": "mocha 'test/**/*.js' --timeout 60000 --exit",
     "lint": "eslint --ignore-path .gitignore ."
@@ -22,6 +25,7 @@
     "commander": "^8.3.0",
     "configstore": "^6.0.0",
     "figures": "^3.2.0",
+    "lodash": "^4.17.21",
     "sqlite3": "^5.0.2",
     "validator": "^13.7.0",
     "winston": "^3.3.3"
