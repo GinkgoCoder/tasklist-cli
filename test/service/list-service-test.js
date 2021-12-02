@@ -11,7 +11,6 @@ const {
 } = require('../../src/dao/sqls')
 const ListService = require('../../src/service/list-service')
 const { expect } = require('chai')
-const { throws } = require('assert')
 const { validateTodoException } = require('../util/test-util')
 const ErrorCodes = require('../../src/exception/error-code')
 const TaskService = require('../../src/service/task-service')

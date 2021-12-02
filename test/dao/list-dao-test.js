@@ -53,6 +53,16 @@ describe('List Dao Test', async () => {
     expect(lists.length).to.equal(0)
   })
 
+  it('should not allow to create two list with the same name', async () => {
+    try {
+      const list = new List('testList')
+      await this.listDao.createList(list)
+      await this.listDao.createList(list)
+    } catch (err) {
+      expect(err.message).to.equal('SQLITE_CONSTRAINT: UNIQUE constraint failed: list.name')
+    }
+  })
+
   afterEach('Drop the List Table', async () => {
     await runSql(this.db, DROP_LIST_TABLE_SQL)
   })

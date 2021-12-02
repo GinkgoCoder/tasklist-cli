@@ -17,8 +17,8 @@ class TaskDao {
 
   _jsonToTask (obj) {
     const task = new Task(obj.description, obj.priority, obj.status, obj.list, obj.isArchived === '1',
-      obj.deadline === 'NULL' ? undefined : new Date(parseInt(obj.deadline)),
-      new Date(parseInt(obj.createTime)), new Date(parseInt(obj.updateTime))
+      obj.deadline === 'NULL' ? undefined : new Date(obj.deadline),
+      new Date(obj.createTime), new Date(obj.updateTime)
     )
     task.setId(obj.id)
     return task

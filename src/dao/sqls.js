@@ -9,9 +9,9 @@ exports.CREATE_TASK_TABLE_SQL = `CREATE TABLE IF NOT EXISTS ${TASK_TABLE_NAME} (
                               priority TEXT NOT NULL,
                               status TEXT NOT NULL,
                               isArchived TEXT NOT NULL,
-                              createTime TEXT NOT NULL,
-                              updateTime TEXT NOT NULL,
-                              deadline TEXT NOT NULL
+                              createTime INTEGER NOT NULL,
+                              updateTime INTEGER NOT NULL,
+                              deadline INTEGER
                             );`
 
 exports.DROP_TASK_TABLE_SQL = `DROP TABLE ${TASK_TABLE_NAME}`
@@ -29,7 +29,7 @@ exports.UPDATE_TASK_SQL = `UPDATE ${TASK_TABLE_NAME} SET description=$descriptio
   `status=$status, createTime=$createTime, updateTime =$updateTime, deadline=$deadline, isArchived=$isArchived WHERE id=$id`
 
 exports.CREATE_LIST_TABLE_SQL = `CREATE TABLE IF NOT EXISTS ${LIST_TABLE_NAME} (id INTEGER PRIMARY KEY AUTOINCREMENT,` +
-  ` name TEXT NOT NULL)`
+  ` name TEXT NOT NULL, CONSTRAINT unq UNIQUE(name))`
 
 exports.DROP_LIST_TABLE_SQL = `DROP TABLE ${LIST_TABLE_NAME}`
 
