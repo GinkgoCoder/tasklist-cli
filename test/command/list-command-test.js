@@ -1,3 +1,4 @@
+'use strict'
 
 const path = require('path')
 const { connectToDB, runSql } = require('../../src/util/db-util')

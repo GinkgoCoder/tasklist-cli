@@ -3,7 +3,6 @@
 const Task = require('../model/task')
 const TaskDao = require('../dao/task-dao')
 const ListDao = require('../dao/list-dao')
-const { DEFAULT_LIST } = require('../util/constants')
 const { Priority, Status, validatePriority } = require('../model/enum')
 const TodoException = require('../exception/todo-exception')
 const ErrorCodes = require('../exception/error-code')
@@ -29,14 +28,14 @@ class TaskService {
     return lists[0]
   }
 
-  async createTask (description, list = DEFAULT_LIST) {
+  async createTask (description, list) {
     const l = await this._validateAndGetListByName(list)
     const task = new Task(description, Priority.NONE, Status.PENDING, l.id,
       false, undefined, new Date(), new Date())
     await this.taskDao.createTask(task)
   }
 
-  async deleteTasks (id) {
+  async deleteTaskById (id) {
     await this.taskDao.deleteTaskById(id)
   }
 

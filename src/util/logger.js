@@ -2,12 +2,15 @@
 
 const winston = require('winston')
 const { format } = require('winston')
-const { printf } = format
+const { combine, printf, timestamp } = format
 
 const { HOME_DIR } = require('./constants')
 
 const errorLogger = winston.createLogger({
-  format: winston.format.json(),
+  format: combine(
+    timestamp(),
+    printf(({ level, timestamp, message }) => `${level} | ${timestamp} | ${message}`)
+  ),
   transports: [
     new winston.transports.File({ filename: HOME_DIR + '/todo.log' })
   ]

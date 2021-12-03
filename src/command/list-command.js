@@ -16,7 +16,7 @@ class ListCommand {
       await this.listService.createList(opts.create)
       this.render.outputSuccessMessage(`Successfully create the list ${opts.create}`)
     } catch (e) {
-      this.logger.error(e.message)
+      this.logger.error(e.toString())
       this.render.outputErrorMessage(`Failed to create the list`)
     }
   }
@@ -27,7 +27,7 @@ class ListCommand {
       await this.listService.deleteList(opts.delete)
       await this.render.outputSuccessMessage(`Successfully delete the list ${opts.delete}`)
     } catch (e) {
-      this.logger.error(e.message)
+      this.logger.error(e.toString())
       await this.render.outputErrorMessage(`Failed to delete the list ${opts.delete}`)
     }
   }
@@ -41,7 +41,7 @@ class ListCommand {
       await this.listService.updateListName(opts.update[0], opts.update[1])
       await this.render.outputSuccessMessage(`Successfully update the list ${opts.update[0]} with ${opts.update[1]}`)
     } catch (e) {
-      this.logger.error(e.message)
+      this.logger.error(e.toString())
       await this.render.outputErrorMessage(`Failed to update the list ${opts.update[0]} with ${opts.update[1]}`)
     }
   }

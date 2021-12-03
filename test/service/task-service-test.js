@@ -33,7 +33,7 @@ describe('Task Service Test', () => {
   })
 
   it('should create a task in default list and get task', async () => {
-    await this.taskService.createTask('test')
+    await this.taskService.createTask('test', DEFAULT_LIST)
     const tasks = await this.taskService.getTasks()
 
     expect(tasks.length).to.equal(1)
@@ -69,16 +69,16 @@ describe('Task Service Test', () => {
   })
 
   it('should delete task', async () => {
-    await this.taskService.createTask('test1')
+    await this.taskService.createTask('test1', DEFAULT_LIST)
 
-    await this.taskService.deleteTasks(1)
+    await this.taskService.deleteTaskById(1)
     const tasks = await this.taskService.getTasks()
 
     expect(tasks.length).to.equal(0)
   })
 
   it('should update task description', async () => {
-    await this.taskService.createTask('test')
+    await this.taskService.createTask('test', DEFAULT_LIST)
     await this.taskService.updateTaskDescription(1, 'test2')
 
     const tasks = await this.taskService.getTasks()
@@ -97,7 +97,7 @@ describe('Task Service Test', () => {
   })
 
   it('should update task priority', async () => {
-    await this.taskService.createTask('test')
+    await this.taskService.createTask('test', DEFAULT_LIST)
     await this.taskService.updateTaskPriority(1, Priority.HIGH)
 
     const tasks = await this.taskService.getTasks()
@@ -116,7 +116,7 @@ describe('Task Service Test', () => {
   })
 
   it('should throw error for priority update when priority is not supported', async () => {
-    await this.taskService.createTask('test')
+    await this.taskService.createTask('test', DEFAULT_LIST)
     try {
       await this.taskService.updateTaskPriority(1, 'test2')
     } catch (error) {
@@ -128,7 +128,7 @@ describe('Task Service Test', () => {
   })
 
   it('should update task list', async () => {
-    await this.taskService.createTask('test')
+    await this.taskService.createTask('test', DEFAULT_LIST)
     await this.taskService.updateTaskList(1, 'Test')
 
     const tasks = await this.taskService.getTasks()
@@ -157,7 +157,7 @@ describe('Task Service Test', () => {
   })
 
   it('should toggle between pending and in progress', async () => {
-    await this.taskService.createTask('test')
+    await this.taskService.createTask('test', DEFAULT_LIST)
     await this.taskService.togglePendingInProgress(1)
     let tasks = await this.taskService.getTasks()
     expect(tasks.length).to.equal(1)
@@ -170,7 +170,7 @@ describe('Task Service Test', () => {
 
   it('should throw error for unsupported status for toggling between pending and in progress', async () => {
     try {
-      await this.taskService.createTask('test')
+      await this.taskService.createTask('test', DEFAULT_LIST)
       await this.taskService.togglePendingInProgress(1)
       await this.taskService.toggleBlockInProgress(1)
       await this.taskService.togglePendingInProgress(1)
@@ -182,7 +182,7 @@ describe('Task Service Test', () => {
   })
 
   it('should toggle between block and in progress', async () => {
-    await this.taskService.createTask('test')
+    await this.taskService.createTask('test', DEFAULT_LIST)
     await this.taskService.togglePendingInProgress(1)
     await this.taskService.toggleBlockInProgress(1)
     let tasks = await this.taskService.getTasks()
@@ -196,7 +196,7 @@ describe('Task Service Test', () => {
 
   it('should throw error for unsupported status for toggling between block and in progress', async () => {
     try {
-      await this.taskService.createTask('test')
+      await this.taskService.createTask('test', DEFAULT_LIST)
       await this.taskService.toggleBlockInProgress(1)
     } catch (error) {
       validateTodoException(error, ErrorCodes.INVALID_STATUS, 'Current status pending is not supported')
@@ -206,7 +206,7 @@ describe('Task Service Test', () => {
   })
 
   it('should toggle between complete and in progress', async () => {
-    await this.taskService.createTask('test')
+    await this.taskService.createTask('test', DEFAULT_LIST)
     await this.taskService.togglePendingInProgress(1)
     await this.taskService.toggleInProgressComplete(1)
     let tasks = await this.taskService.getTasks()
@@ -220,7 +220,7 @@ describe('Task Service Test', () => {
 
   it('should throw error for unsupported status for toggling between complete and in progress', async () => {
     try {
-      await this.taskService.createTask('test')
+      await this.taskService.createTask('test', DEFAULT_LIST)
       await this.taskService.toggleBlockInProgress(1)
     } catch (error) {
       validateTodoException(error, ErrorCodes.INVALID_STATUS, 'Current status pending is not supported')
@@ -230,7 +230,7 @@ describe('Task Service Test', () => {
   })
 
   it('should toggle archive for task', async () => {
-    await this.taskService.createTask('test')
+    await this.taskService.createTask('test', DEFAULT_LIST)
     await this.taskService.toggleTaskArchive(1)
 
     let tasks = await this.taskService.getTasks()
@@ -254,8 +254,8 @@ describe('Task Service Test', () => {
   })
 
   it('should get tasks for the specified list id', async () => {
-    await this.taskService.createTask('test1')
-    await this.taskService.createTask('test2')
+    await this.taskService.createTask('test1', DEFAULT_LIST)
+    await this.taskService.createTask('test2', DEFAULT_LIST)
     await this.taskService.createTask('test3', 'Test')
 
     const tasks = await this.taskService.getTasksByListId(1)
