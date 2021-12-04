@@ -1,5 +1,6 @@
 'use strict'
 
+const { padStart } = require('lodash')
 const ListService = require('../service/list-service')
 const TaskService = require('../service/task-service')
 const Render = require('../util/render')
@@ -13,14 +14,21 @@ class ShowCommand {
   }
 
   async _showTaskForList (list) {
-    const tasksForList = await this.taskService.getTasksByListId(list.id)
-    this.render.renderList(list.name, tasksForList)
+    const tasksForList = (await this.taskService.getTasksByListId(list.id)).filter(t => !t.isArchived)
+    await this.render.renderList(list.name, tasksForList)
+  }
+
+  async _showArchiveLists () {
+    const archieveTasks = (await this.taskService.getTasks()).filter(t => t.isArchived)
+    await this.render.renderList('Archived Tasks', archieveTasks)
   }
 
   async handle (opts) {
     const lists = await this.listService.getLists()
 
-    if (opts.list) {
+    if (opts.archive) {
+      await this._showArchiveLists()
+    } else if (opts.list) {
       const filteredList = lists.filter(l => l.name === opts.list)
       if (filteredList.length > 0) {
         await this._showTaskForList(filteredList[0])

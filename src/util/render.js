@@ -22,7 +22,7 @@ class Render {
       case Status.PENDING:
         return `${figures.checkboxOff} ${task.id}`
       case Status.BLOCK:
-        return `${red(figures.cross)} ${task.id}`
+        return `${red(figures.cross)}   ${task.id}`
       case Status.COMPLETE:
         return `${green(figures.checkboxOn)} ${task.id}`
       case Status.IN_PROGRESS:
