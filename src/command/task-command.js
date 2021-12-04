@@ -8,7 +8,7 @@ const TaskService = require('../service/task-service')
 const TodoException = require('../exception/todo-exception')
 const ErrorCodes = require('../exception/error-code')
 const validator = require('validator')
-const { Priority } = require('../model/enum')
+const { Priority, Status } = require('../model/enum')
 
 class TaskCommand {
   constructor (dbpath, logger) {
@@ -134,6 +134,106 @@ class TaskCommand {
     }
   }
 
+  async _togglePendingInProgress (opts) {
+    if (!validator.isInt(opts.start)) {
+      return this.render.outputErrorMessage('Task id should be an integer')
+    }
+
+    try {
+      await this.taskService.togglePendingInProgress(parseInt(opts.start))
+      this.render.outputSuccessMessage(`Successfully update the status of the task ${opts.start},, `)
+    } catch (e) {
+      this.logger.error(e.toString())
+      if (e instanceof TodoException) {
+        this.render.outputErrorMessage(e.message)
+      }
+      this.render.outputErrorMessage(`Failed to update the status of the task`)
+    }
+  }
+
+  async _toggleInProgressComplete (opts) {
+    if (!validator.isInt(opts.finish)) {
+      return this.render.outputErrorMessage('Task id should be an integer')
+    }
+
+    try {
+      await this.taskService.toggleInProgressComplete(parseInt(opts.finish))
+      this.render.outputSuccessMessage(`Successfully update the status of the task ${opts.finish}`)
+    } catch (e) {
+      this.logger.error(e.toString())
+      if (e instanceof TodoException) {
+        this.render.outputErrorMessage(e.message)
+      }
+      this.render.outputErrorMessage(`Failed to update the status of the task`)
+    }
+  }
+
+  async _toggleInProgressBlock (opts) {
+    if (!validator.isInt(opts.block)) {
+      return this.render.outputErrorMessage('Task id should be an integer')
+    }
+
+    try {
+      await this.taskService.toggleBlockInProgress(parseInt(opts.block))
+      this.render.outputSuccessMessage(`Successfully update the status of the task ${opts.block}`)
+    } catch (e) {
+      this.logger.error(e.toString())
+      if (e instanceof TodoException) {
+        this.render.outputErrorMessage(e.message)
+      }
+      this.render.outputErrorMessage(`Failed to update the status of the task`)
+    }
+  }
+
+  async _toggleArchiveTasks (opts) {
+    opts.archive = _.isArray(opts.archive) ? opts.archive : [opts.archive]
+
+    if (!opts.archive.every(id => validator.isInt(id))) {
+      return this.render.outputErrorMessage(`Task id should be an integer`)
+    }
+
+    const [successIds, failIds] = [[], []]
+
+    for (const id of opts.archive) {
+      try {
+        await this.taskService.toggleTaskArchive(parseInt(id))
+        successIds.push(id)
+      } catch (e) {
+        this.logger.error(e)
+        failIds.push(id)
+      }
+    }
+
+    if (successIds.length > 0) {
+      this.render.outputSuccessMessage(`Successfully update the status of the tasks ${successIds}`)
+    }
+
+    if (failIds.length > 0) {
+      this.render.outputErrorMessage(`Failed to update the status of the tasks ${failIds}`)
+    }
+  }
+
+  async _clearTasks (opts) {
+    let tasks = (await this.taskService.getTasks()).filter(t => !t.isArchived && t.status === Status.COMPLETE)
+
+    if (opts.list) {
+      const lists = (await this.listService.getLists()).filter(l => l.name === opts.list)
+      if (lists.length === 0) {
+        return this.render.outputErrorMessage(`The list ${opts.list} does not exist`)
+      }
+      tasks = tasks.filter(t => t.list === lists[0].id)
+    }
+
+    for (const task of tasks) {
+      try {
+        await this.taskService.toggleTaskArchive(parseInt(task.id))
+      } catch (e) {
+        this.logger.error(e)
+      }
+    }
+    this.render.outputSuccessMessage(`Finish to clear the tasks`)
+  }
+
   async handle (opts) {
     if (opts.create) {
       await this._createTask(opts)
@@ -145,6 +245,16 @@ class TaskCommand {
       await this._moveTask(opts)
     } else if (opts.priority) {
       await this._setTaskPriority(opts)
+    } else if (opts.start) {
+      await this._togglePendingInProgress(opts)
+    } else if (opts.finish) {
+      await this._toggleInProgressComplete(opts)
+    } else if (opts.block) {
+      await this._toggleInProgressBlock(opts)
+    } else if (opts.archive) {
+      await this._toggleArchiveTasks(opts)
+    } else if (opts.clear) {
+      await this._clearTasks(opts)
     }
   }
 }

@@ -14,7 +14,7 @@ const { expect } = require('chai')
 const TaskCommand = require('../../src/command/task-command')
 const { DEFAULT_LIST } = require('../../src/util/constants')
 const TaskDao = require('../../src/dao/task-dao')
-const { Priority } = require('../../src/model/enum')
+const { Priority, Status } = require('../../src/model/enum')
 
 describe('Task Command Test', () => {
   before('tear up', async () => {
@@ -96,6 +96,90 @@ describe('Task Command Test', () => {
     tasks = await this.taskDao.getAllTasks()
     expect(tasks.length).to.equal(1)
     expect(tasks[0].priority).to.equal(Priority.HIGH)
+  })
+
+  it('Should change the task status between pending and in-progress', async () => {
+    await this.listCommand.handle({ create: 'test' })
+    await this.listCommand.handle({ start: '1' })
+    let tasks = await this.taskDao.getAllTasks()
+    expect(tasks.length).to.equal(1)
+    expect(tasks[0].status).to.equal(Status.IN_PROGRESS)
+    await this.listCommand.handle({ start: '1' })
+    tasks = await this.taskDao.getAllTasks()
+    expect(tasks.length).to.equal(1)
+    expect(tasks[0].status).to.equal(Status.PENDING)
+  })
+
+  it('Should change the task status between in-progress and complete', async () => {
+    await this.listCommand.handle({ create: 'test' })
+    await this.listCommand.handle({ start: '1' })
+    await this.listCommand.handle({ finish: '1' })
+    let tasks = await this.taskDao.getAllTasks()
+    expect(tasks.length).to.equal(1)
+    expect(tasks[0].status).to.equal(Status.COMPLETE)
+    await this.listCommand.handle({ finish: '1' })
+    tasks = await this.taskDao.getAllTasks()
+    expect(tasks.length).to.equal(1)
+    expect(tasks[0].status).to.equal(Status.IN_PROGRESS)
+  })
+
+  it('Should change the task status between in-progress and block', async () => {
+    await this.listCommand.handle({ create: 'test' })
+    await this.listCommand.handle({ start: '1' })
+    await this.listCommand.handle({ block: '1' })
+    let tasks = await this.taskDao.getAllTasks()
+    expect(tasks.length).to.equal(1)
+    expect(tasks[0].status).to.equal(Status.BLOCK)
+    await this.listCommand.handle({ block: '1' })
+    tasks = await this.taskDao.getAllTasks()
+    expect(tasks.length).to.equal(1)
+    expect(tasks[0].status).to.equal(Status.IN_PROGRESS)
+  })
+
+  it('Should archive the tasks', async () => {
+    await this.listCommand.handle({ create: 'test' })
+    await this.listCommand.handle({ archive: '1' })
+    let tasks = await this.taskDao.getAllTasks()
+    expect(tasks.length).to.equal(1)
+    expect(tasks[0].isArchived).to.equal(true)
+    await this.listCommand.handle({ archive: '1' })
+    tasks = await this.taskDao.getAllTasks()
+    expect(tasks.length).to.equal(1)
+    expect(tasks[0].isArchived).to.equal(false)
+  })
+
+  it('Should clear all the tasks', async () => {
+    await this.listCommand.handle({ create: 'test1' })
+    await this.listCommand.handle({ create: 'test2', list: 'Test' })
+    await this.listCommand.handle({ start: '1' })
+    await this.listCommand.handle({ finish: '1' })
+    await this.listCommand.handle({ start: '2' })
+    await this.listCommand.handle({ finish: '2' })
+    await this.listCommand.handle({ clear: true })
+
+    const tasks = await this.taskDao.getAllTasks()
+    for (const task of tasks) {
+      expect(task.isArchived).to.equal(true)
+    }
+  })
+
+  it('Should clear all the tasks in a list', async () => {
+    await this.listCommand.handle({ create: 'test1' })
+    await this.listCommand.handle({ create: 'test2', list: 'Test' })
+    await this.listCommand.handle({ start: '1' })
+    await this.listCommand.handle({ finish: '1' })
+    await this.listCommand.handle({ start: '2' })
+    await this.listCommand.handle({ finish: '2' })
+    await this.listCommand.handle({ clear: true, list: 'Test' })
+
+    const tasks = await this.taskDao.getAllTasks()
+    for (const task of tasks) {
+      if (task.id === 1) {
+        expect(task.isArchived).to.equal(false)
+      } else {
+        expect(task.isArchived).to.equal(true)
+      }
+    }
   })
 
   afterEach('Drop the Table', async () => {
