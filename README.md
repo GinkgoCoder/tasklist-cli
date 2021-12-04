@@ -1,13 +1,6 @@
-# todo-cli
+# Tasklist-cli
 
-- [x] Task Model
-- [ ] Sqlite Manipulation
-- [ ] Actions
-    - [ ] create task
-    - [ ] begin task
-    - [ ] block task
-    - [ ] complete task
-- [ ] Display
-- [ ] List Model
-- [ ] Note
-- [ ] ESlint
+[![Build Status](https://app.travis-ci.com/GinkgoCoder/tasklist-cli.svg?branch=main)](https://app.travis-ci.com/GinkgoCoder/tasklist-cli)
+
+
+A comman-line tool to manage the daily tasks.
