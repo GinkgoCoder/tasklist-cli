@@ -11,11 +11,13 @@ const logger = require('./util/logger')
 const ListCommand = require('./command/list-command')
 const TaskCommand = require('./command/task-command')
 const ShowCommand = require('./command/show-command')
+const log = require('./util/logger')
 
 const dbPath = join(HOME_DIR, 'todo.db')
+
 const initialize = async () => {
   if (!fs.existsSync(HOME_DIR)) {
-    fs.mkdirSync(HOME_DIR)
+    await fs.mkdirSync(HOME_DIR)
   }
   if (!fs.existsSync(dbPath)) {
     const db = connectToDB(dbPath)
@@ -24,12 +26,6 @@ const initialize = async () => {
     await runSql(db, CREATE_LIST_SQL, DEFAULT_LIST)
   }
 }
-
-const main = async () => {
-  await initialize()
-}
-
-main()
 
 const listCommand = new ListCommand(dbPath, logger)
 const taskCommand = new TaskCommand(dbPath, logger)
@@ -67,4 +63,8 @@ program.command('show')
   .option('-l --list <list>', 'show the task in the specified list')
   .action(async opts => await showCommand.handle(opts))
 
-program.parse(process.argv)
+program
+  .hook('preAction', async () => {
+    await initialize()
+  })
+  .parse(process.argv)

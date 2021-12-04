@@ -1,6 +1,5 @@
 'use strict'
 
-const { padStart } = require('lodash')
 const ListService = require('../service/list-service')
 const TaskService = require('../service/task-service')
 const Render = require('../util/render')
@@ -26,7 +25,7 @@ class ShowCommand {
 
   async handle (opts) {
     const lists = await this.listService.getLists()
-
+    this.logger.info('')
     if (opts.archive) {
       await this._showArchiveLists()
     } else if (opts.list) {

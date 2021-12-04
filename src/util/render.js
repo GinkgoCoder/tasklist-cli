@@ -75,7 +75,7 @@ class Render {
       case Status.BLOCK:
         return `${red(figures.cross)}`
       case Status.COMPLETE:
-        return `${green(figures.checkboxOn)}`
+        return `${green(figures.tick)}`
       case Status.IN_PROGRESS:
         return `${yellow('...')}`
     }
@@ -162,7 +162,7 @@ class Render {
     bar.start(pendings.length + inProgress.length + blocks.length + completes.length, completes.length)
     bar.stop()
     const status = `| pending: ${cyan(pendings.length)} | inProgress: ${yellow(inProgress.length)} |` +
-    ` block: ${red(blocks.length)} | complete: ${green(completes.length)} |`
+    ` block: ${red(blocks.length)} | complete: ${green(completes.length)} | \n`
     this.logger.info(status)
   }
 }
