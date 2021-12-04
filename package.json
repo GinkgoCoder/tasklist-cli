@@ -1,10 +1,10 @@
 {
-  "name": "todo-cli",
+  "name": "tasklist-cli",
   "version": "1.0.0",
   "description": "todo command-line application",
   "main": "index.js",
   "bin": {
-    "td": "./src/todo.js"
+    "tl": "./src/todo.js"
   },
   "scripts": {
     "test": "mocha 'test/**/*.js' --timeout 60000 --exit",
