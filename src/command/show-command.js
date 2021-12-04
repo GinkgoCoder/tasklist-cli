@@ -16,6 +16,7 @@ class ShowCommand {
   async _showTaskForList (list) {
     const tasksForList = (await this.taskService.getTasksByListId(list.id)).filter(t => !t.isArchived)
     await this.render.renderList(list.name, tasksForList)
+    return tasksForList
   }
 
   async _showArchiveLists () {
@@ -31,12 +32,15 @@ class ShowCommand {
     } else if (opts.list) {
       const filteredList = lists.filter(l => l.name === opts.list)
       if (filteredList.length > 0) {
-        await this._showTaskForList(filteredList[0])
+        const tasks = await this._showTaskForList(filteredList[0])
+        await this.render.renderStatus(tasks)
       }
     } else {
+      let tasks = []
       for (const list of lists) {
-        await this._showTaskForList(list)
+        tasks = [...tasks, ...(await this._showTaskForList(list))]
       }
+      await this.render.renderStatus(tasks)
     }
   }
 }
