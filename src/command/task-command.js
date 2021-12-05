@@ -1,4 +1,3 @@
-
 'use strict'
 
 const ListService = require('../service/list-service')
@@ -9,6 +8,11 @@ const TodoException = require('../exception/todo-exception')
 const ErrorCodes = require('../exception/error-code')
 const validator = require('validator')
 const { Priority, Status } = require('../model/enum')
+const fs = require('fs')
+const { HOME_DIR } = require('../util/constants')
+const chileProcess = require('child_process')
+const { join } = require('path')
+const { readConfig } = require('../util/config')
 
 class TaskCommand {
   constructor (dbpath, logger) {
@@ -141,7 +145,7 @@ class TaskCommand {
 
     try {
       await this.taskService.togglePendingInProgress(parseInt(opts.start))
-      this.render.outputSuccessMessage(`Successfully update the status of the task ${opts.start},, `)
+      this.render.outputSuccessMessage(`Successfully update the status of the task ${opts.start}`)
     } catch (e) {
       this.logger.error(e.toString())
       if (e instanceof TodoException) {
@@ -234,6 +238,35 @@ class TaskCommand {
     this.render.outputSuccessMessage(`Finish to clear the tasks`)
   }
 
+  async _openTaskNote (opts) {
+    if (!validator.isInt(opts.open)) {
+      return this.render.outputErrorMessage('The task id should be an integer')
+    }
+    const tasks = (await this.taskService.getTasks()).filter(t => t.id === parseInt(opts.open))
+    if (tasks.length === 0) {
+      return this.render.outputErrorMessage(`The task id does not exist`)
+    }
+
+    const notePath = join(HOME_DIR, `${opts.open}.md`)
+
+    if (!fs.existsSync(notePath)) {
+      await fs.promises.writeFile(notePath, `# ${tasks[0].description}`)
+      this._openNoteInEditor(notePath)
+    } else {
+      this._openNoteInEditor(notePath)
+    }
+  }
+
+  async _openNoteInEditor (notePath) {
+    let editor = process.env.EDITOR ? process.env.EDITOR : 'vi'
+    if (process.platform.includes('win')) {
+      editor = (await readConfig()).WINDOWS_EDITOR
+    }
+    chileProcess.spawn(editor, [notePath], {
+      stdio: 'inherit'
+    })
+  }
+
   async handle (opts) {
     if (opts.create) {
       await this._createTask(opts)
@@ -255,6 +288,8 @@ class TaskCommand {
       await this._toggleArchiveTasks(opts)
     } else if (opts.clear) {
       await this._clearTasks(opts)
+    } else if (opts.open) {
+      await this._openTaskNote(opts)
     }
   }
 }

@@ -1,8 +1,10 @@
 'use strict'
 
+const { Status } = require('../model/enum')
 const ListService = require('../service/list-service')
 const TaskService = require('../service/task-service')
 const Render = require('../util/render')
+const babar = require('babar')
 
 class ShowCommand {
   constructor (dbPath, logger) {
@@ -23,10 +25,38 @@ class ShowCommand {
     await this.render.renderList('Archived Tasks', archieveTasks)
   }
 
+  async _showStatics () {
+    const completeTasks = (await this.taskService.getTasks()).filter(t => t.status === Status.COMPLETE)
+    const taskNum7dyas = [[0, 0], [1, 0], [2, 0], [3, 0], [4, 0], [5, 0], [6, 0], [7, 0]]
+    const startTime = new Date()
+    startTime.setDate(startTime.getDate() - 6)
+    startTime.setHours(0, 0, 0)
+
+    let max = 0
+
+    for (const task of completeTasks) {
+      const index = Math.floor(task.updateTime - startTime.getTime() / 86400000) % 7 + 1
+      taskNum7dyas[index][1]++
+      if (taskNum7dyas[index][1] > max) {
+        max = taskNum7dyas[index][1]
+      }
+    }
+
+    this.logger.info(babar(taskNum7dyas, {
+      caption: 'Tasks finished in last 7 days',
+      color: 'green',
+      minY: 0,
+      maxY: max === 0 ? 1 : max
+    }))
+  }
+
   async handle (opts) {
     const lists = await this.listService.getLists()
     this.logger.info('')
-    if (opts.archive) {
+
+    if (opts.static) {
+      await this._showStatics()
+    } else if (opts.archive) {
       await this._showArchiveLists()
     } else if (opts.list) {
       const filteredList = lists.filter(l => l.name === opts.list)

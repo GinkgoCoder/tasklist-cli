@@ -111,7 +111,7 @@ class TaskService {
   async toggleTaskArchive (id) {
     const updatedTask = await this._validateAndGetTaskById(id)
     updatedTask.isArchived = !updatedTask.isArchived
-    await this.taskDao.updateTask(updatedTask)
+    await this.taskDao.updateTask(updatedTask, false)
   }
 
   async getTasksByListId (id) {

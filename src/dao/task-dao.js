@@ -57,7 +57,10 @@ class TaskDao {
     await runSql(this.db, DELETE_TASK_SQL, id)
   }
 
-  async updateTask (task) {
+  async updateTask (task, updateTime = true) {
+    if (updateTime) {
+      task.updateTime = new Date()
+    }
     await runSql(this.db, UPDATE_TASK_SQL, this._buildValuesForSQL(task))
   }
 }
