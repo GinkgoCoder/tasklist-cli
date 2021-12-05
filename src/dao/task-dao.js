@@ -31,9 +31,9 @@ class TaskDao {
       $priority: task.priority,
       $status: task.status,
       $isArchived: task.isArchived,
-      $createTime: task.createTime.getTime(),
-      $updateTime: task.updateTime.getTime(),
-      $deadline: task.deadline ? task.deadline.getTime() : 'NULL',
+      $createTime: Math.round(task.createTime.getTime() / 1000),
+      $updateTime: Math.round(task.updateTime.getTime() / 1000),
+      $deadline: task.deadline ? Math.round(task.deadline.getTime() / 1000) : 'NULL',
       $list: task.list
     }
   }
@@ -57,7 +57,10 @@ class TaskDao {
     await runSql(this.db, DELETE_TASK_SQL, id)
   }
 
-  async updateTask (task) {
+  async updateTask (task, updateTime = true) {
+    if (updateTime) {
+      task.updateTime = new Date()
+    }
     await runSql(this.db, UPDATE_TASK_SQL, this._buildValuesForSQL(task))
   }
 }

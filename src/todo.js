@@ -11,60 +11,70 @@ const logger = require('./util/logger')
 const ListCommand = require('./command/list-command')
 const TaskCommand = require('./command/task-command')
 const ShowCommand = require('./command/show-command')
-const log = require('./util/logger')
 
 const dbPath = join(HOME_DIR, 'todo.db')
+const configJson = join(HOME_DIR, 'todo.json')
 
 const initialize = async () => {
   if (!fs.existsSync(HOME_DIR)) {
     await fs.mkdirSync(HOME_DIR)
   }
+
+  if (!fs.existsSync(configJson)) {
+    fs.closeSync(fs.openSync(configJson, 'w'))
+  }
+
   if (!fs.existsSync(dbPath)) {
-    const db = connectToDB(dbPath)
+    const db = await connectToDB(dbPath)
     await runSql(db, CREATE_TASK_TABLE_SQL)
     await runSql(db, CREATE_LIST_TABLE_SQL)
     await runSql(db, CREATE_LIST_SQL, DEFAULT_LIST)
   }
 }
 
-const listCommand = new ListCommand(dbPath, logger)
-const taskCommand = new TaskCommand(dbPath, logger)
-const showCommand = new ShowCommand(dbPath, logger)
+const main = async () => {
+  await initialize()
 
-program.version('1.0.0')
+  const listCommand = new ListCommand(dbPath, logger)
+  const taskCommand = new TaskCommand(dbPath, logger)
+  const showCommand = new ShowCommand(dbPath, logger)
 
-program.command('task')
-  .alias('t')
-  .description('Task Operation')
-  .option('-c --create <task>', 'create task')
-  .option('-d --delete <ids...>', 'delete tasks')
-  .option('-u --update <id description...>', 'update task description')
-  .option('-m --move <id>', 'move task to anothe list')
-  .option('-p --priority <id priority...>', 'set task priority')
-  .option('-s --start <id>', 'start or stop task')
-  .option('-b --block <id>', 'block or unblock task in progress')
-  .option('-f --finish <id>', 'complete or restart the task')
-  .option('-a --archive <ids...>', 'archieve the tasks')
-  .option('--clear', 'archive all the complete tasks')
-  .option('-l --list <list>', 'specify list during task creation')
-  .action(async opts => await taskCommand.handle(opts))
+  program.version('1.0.0')
 
-program.command('list')
-  .alias('l')
-  .description('List Opration')
-  .option('-c --create <list>', 'create list')
-  .option('-d --delete <list>', 'delete list')
-  .option('-u --update <oldvalue newvalue...>', 'update list')
-  .action(async opts => await listCommand.handle(opts))
+  program.command('task')
+    .alias('t')
+    .description('Task Operation')
+    .option('-c --create <task>', 'create task')
+    .option('-d --delete <ids...>', 'delete tasks')
+    .option('-u --update <id description...>', 'update task description')
+    .option('-m --move <id>', 'move task to anothe list')
+    .option('-p --priority <id priority...>', 'set task priority')
+    .option('-s --start <id>', 'start or stop task')
+    .option('-b --block <id>', 'block or unblock task in progress')
+    .option('-f --finish <id>', 'complete or restart the task')
+    .option('-a --archive <ids...>', 'archieve the tasks')
+    .option('-o --open <id>', 'open the note of the task')
+    .option('--clear', 'archive all the complete tasks')
+    .option('-l --list <list>', 'specify list during task creation')
+    .action(async opts => await taskCommand.handle(opts))
 
-program.command('show')
-  .alias('s')
-  .option('-a --archive', 'show all tasks')
-  .option('-l --list <list>', 'show the task in the specified list')
-  .action(async opts => await showCommand.handle(opts))
+  program.command('list')
+    .alias('l')
+    .description('List Opration')
+    .option('-c --create <list>', 'create list')
+    .option('-d --delete <list>', 'delete list')
+    .option('-u --update <oldvalue newvalue...>', 'update list')
+    .action(async opts => await listCommand.handle(opts))
 
-program
-  .hook('preAction', async () => {
-    await initialize()
-  })
-  .parse(process.argv)
+  program.command('show')
+    .alias('s')
+    .option('-a --archive', 'show all tasks')
+    .option('-s --static', 'show the tatics of the last seven days')
+    .option('-l --list <list>', 'show the task in the specified list')
+    .action(async opts => await showCommand.handle(opts))
+
+  program
+    .parse(process.argv)
+}
+
+main()
