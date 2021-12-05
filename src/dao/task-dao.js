@@ -31,9 +31,9 @@ class TaskDao {
       $priority: task.priority,
       $status: task.status,
       $isArchived: task.isArchived,
-      $createTime: Math.round(task.createTime.getTime() / 1000),
-      $updateTime: Math.round(task.updateTime.getTime() / 1000),
-      $deadline: task.deadline ? Math.round(task.deadline.getTime() / 1000) : 'NULL',
+      $createTime: task.createTime.getTime(),
+      $updateTime: task.updateTime.getTime(),
+      $deadline: task.deadline ? task.deadline.getTime() : 'NULL',
       $list: task.list
     }
   }

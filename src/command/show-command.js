@@ -35,7 +35,7 @@ class ShowCommand {
     let max = 0
 
     for (const task of completeTasks) {
-      const index = Math.floor((task.updateTime - Math.round(startTime.getTime() / 1000)) / 86400) % 7 + 1
+      const index = Math.floor(task.updateTime - startTime.getTime() / 86400000) % 7 + 1
       taskNum7dyas[index][1]++
       if (taskNum7dyas[index][1] > max) {
         max = taskNum7dyas[index][1]
